@@ -9,9 +9,10 @@ export const Board=()=>{
     const player=0;
     const inputref=useRef("null");
     const socket = io();
+    console.log("socket", socket)
     
     useEffect(()=>{
-        socket.on('chat',(data)=>{
+        socket.on('play',(data)=>{
             console.log('Chat event received!');
             console.log(data)
             setBoard(data)
@@ -22,7 +23,7 @@ export const Board=()=>{
         var item=[...board.slice(0,num),value,...board.slice(num+1)]
         console.log("item",item);
         setBoard(item)
-        socket.emit('chat',item);
+        socket.emit('play',item);
     }
     return(
         <div className="board">
