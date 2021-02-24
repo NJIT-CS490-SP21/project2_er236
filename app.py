@@ -35,13 +35,15 @@ socketio = SocketIO(
 @app.route("/LoginorRegister",methods=["GET","POST"])
 def login():
     data=json.loads(request.data.decode())
+    print("login", data["id"],"=>",clients.index(data['id']))
     if data["option"]=="register":
         try:
             db.session.add(Person(username=data["name"],score=0))
             db.session.commit()
             return ({
                   "code":0,
-                  "message":"Successfully registerd user"
+                  "message":"Successfully registerd user",
+                  "id":clients.index(data['id'])
               })
         except Exception as error:
               return ({
@@ -60,7 +62,8 @@ def login():
         else:
             return ({
                   "code":0,
-                  "message":"Successfully logged in"
+                  "message":"Successfully logged in",
+                  "id":clients.index(data['id'])
               })
     
     
@@ -71,30 +74,39 @@ def login():
 @app.route('/<path:filename>')
 def index(filename):
     return send_from_directory('./build', filename)
-rolenum=0
+
 
 @socketio.on('connect')
 def on_connect():
-    global rolenum
-    rolenum+=1
     print('User connected!')
-    if request.sid not in clients:
+    if len(clients)==1 and clients[0]=="":
+        clients[0]=request.sid
+    elif request.sid not in clients:
         clients.append(request.sid)
-    print("playernumber: ",rolenum)
-    return ({"value":rolenum})
+    print("player number: ",len(clients))
+    
 # When a client disconnects from this Socket connection, this function is run
 @socketio.on('disconnect')
 def on_disconnect():
-    global rolenum
-    
     print('User disconnected!')
-    print("player number: ",rolenum)
     print(request.sid)
     remove=clients.index(request.sid)
     print("exist: ",request.sid in clients)
     print("id: ",clients.index(request.sid))
-    rolenum-=1
-    
+    if len(clients)>2 and remove==0:
+        print("rule1")
+        clients[0]=clients[2]
+        del clients[2]
+        socketio.emit("turn",0,room=clients[0])
+        for i in range(2,len(clients)):
+            socketio.emit("turn",i,room=clients[i])
+    else:
+        del clients[remove]
+        for i in range(remove,len(clients)):
+            socketio.emit("turn",i,room=clients[i])
+
+    for item in clients:
+        print(item)
 
 # When a client emits the event 'chat' to the server, this function is run
 # 'chat' is a custom event name that we just decided
@@ -103,10 +115,6 @@ def on_play(data): # data is whatever arg you pass in your emit call on client
     print(str(data))
     socketio.emit('play',  data, broadcast=True, include_self=False)
 
-rolenum=0
-@app.route("/role",methods=['GET'])
-def getRole():
-    return {"role":rolenum}
 # Note that we don't call app.run anymore. We call socketio.run with app arg
 socketio.run(
     app,

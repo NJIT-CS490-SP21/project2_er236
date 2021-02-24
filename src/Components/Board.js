@@ -5,8 +5,6 @@ import { useState,useRef,useEffect  } from 'react'
 
 export const Board=(props)=>{
     const [board,setBoard]=useState(["_","_","_","_","_","_","_","_","_"])
-    const player=0;
-    
 
 
     useEffect(()=>{
@@ -15,10 +13,6 @@ export const Board=(props)=>{
             console.log(data)
             setBoard(data)
         });
-        props.socket.on("connect",(data)=>{
-            console.log("turn",data)
-        })
-        
     },[])
     
     function send(num,value){ 
@@ -28,7 +22,7 @@ export const Board=(props)=>{
     }
     return(
         <div className="board">
-            {board.map((items,index)=>{ return <Box  index={index}  func={send} value={board[index]} player={props.role}/>
+            {board.map((items,index)=>{ return <Box  index={index}  func={send} value={board[index]} player={props.id}/>
             })}
         </div>
     )
@@ -39,10 +33,10 @@ const Box=(props)=>{
         if (props.value==="_"){
             if (props.player<=1){
                 props.func(props.index,values[props.player])
-                console.log(props.player)
             }
             else{
                 alert("Spectators cant play!!")
+                alert(props.player)
             }
         }
     }
