@@ -23,7 +23,6 @@ function App(props) {
         alert(req['data']['message'])
       }
       else{
-        console.log(Logged.slice(0,2))
         isLogged([true,name,req['data']['id']])
       }
     })
