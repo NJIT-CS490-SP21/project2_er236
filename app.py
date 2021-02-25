@@ -33,6 +33,7 @@ socketio = SocketIO(
     manage_session=True,
     monitor_clients=True
 )
+
 @app.route("/LoginorRegister",methods=["GET","POST"])
 def login():
     data=json.loads(request.data.decode())
@@ -66,16 +67,11 @@ def login():
                   "message":"Successfully logged in",
                   "id":clients.index(data['id'])
               })
-    
-    
-    
-    
-    
+              
 @app.route('/', defaults={"filename": "index.html"})
 @app.route('/<path:filename>')
 def index(filename):
     return send_from_directory('./build', filename)
-
 
 @socketio.on('connect')
 def on_connect():
@@ -141,7 +137,15 @@ def on_play(data): # data is whatever arg you pass in your emit call on client
     didWin=checkWon(data)
     socketio.emit('play',  {"data":data,"Won":didWin}, broadcast=True, include_self=True)
 
-# Note that we don't call app.run anymore. We call socketio.run with app arg
+restartNum=0
+@socketio.on("restart")
+def restart():
+    global restartNum
+    restart+=1
+    if restart==2:
+        socketio.emit('play',  {"data":["_","_","_","_","_","_","_","_","_"],"Won":"_"}, broadcast=True, include_self=True)
+        restartNum=0
+
 socketio.run(
     app,
     host=os.getenv('IP', '0.0.0.0'),
