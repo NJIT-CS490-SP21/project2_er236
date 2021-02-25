@@ -30,7 +30,8 @@ socketio = SocketIO(
     app,
     cors_allowed_origins="*",
     json=json,
-    manage_session=True
+    manage_session=True,
+    monitor_clients=True
 )
 @app.route("/LoginorRegister",methods=["GET","POST"])
 def login():
@@ -89,10 +90,7 @@ def on_connect():
 @socketio.on('disconnect')
 def on_disconnect():
     print('User disconnected!')
-    print(request.sid)
     remove=clients.index(request.sid)
-    print("exist: ",request.sid in clients)
-    print("id: ",clients.index(request.sid))
     if len(clients)>2 and remove==0:
         print("rule1")
         clients[0]=clients[2]
@@ -108,12 +106,40 @@ def on_disconnect():
     for item in clients:
         print(item)
 
-# When a client emits the event 'chat' to the server, this function is run
-# 'chat' is a custom event name that we just decided
+def checkWon(data):
+    winner="_"
+    values=["X","O"]
+    # row1
+    if data[0]==data[1]==data[2] and data[0] in values:
+        winner=data[0]
+    #row2
+    elif data[3]==data[4]==data[5] and data[3] in values:
+        winner=data[3]
+    #row3
+    elif data[6]==data[7]==data[8] and data[6] in values:
+        winner=data[6]
+    #column1
+    elif data[0]==data[3]==data[6] and data[0] in values:
+        winner=data[0]
+    #column2
+    elif data[1]==data[4]==data[7] and data[1] in values:
+        winner=data[1]
+    #column3
+    elif data[2]==data[5]==data[8] and data[2] in values:
+        winner=data[2]
+    #forward diagonal /
+    elif data[2]==data[4]==data[6] and data[2] in values:
+        winner=data[2]
+    #backward diagonal
+    elif data[0]==data[4]==data[8] and data[0] in values:
+        winner=data[0]
+    return winner
+    
 @socketio.on('play')
 def on_play(data): # data is whatever arg you pass in your emit call on client
-    print(str(data))
-    socketio.emit('play',  data, broadcast=True, include_self=False)
+    print(data)
+    didWin=checkWon(data)
+    socketio.emit('play',  {"data":data,"Won":didWin}, broadcast=True, include_self=True)
 
 # Note that we don't call app.run anymore. We call socketio.run with app arg
 socketio.run(

@@ -4,20 +4,21 @@ import { useState,useRef,useEffect  } from 'react'
 
 
 export const Board=(props)=>{
-    const [board,setBoard]=useState(["_","_","_","_","_","_","_","_","_"])
-
+    const [board,setBoard]=useState(["_","_","_",
+                                    "_","_","_",
+                                    "_","_","_"])
 
     useEffect(()=>{
         props.socket.on('play',(data)=>{
             console.log('Chat event received!');
             console.log(data)
-            setBoard(data)
+            setBoard(data['data'])
         });
+        
     },[])
     
     function send(num,value){ 
         var item=[...board.slice(0,num),value,...board.slice(num+1)]
-        setBoard(item)
         props.socket.emit('play',item);
     }
     return(
