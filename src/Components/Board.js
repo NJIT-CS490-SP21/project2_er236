@@ -5,7 +5,7 @@ import { useState,useEffect  } from 'react'
 
 export const Board=(props)=>{
     //States values
-   
+    console.log("props.id: ",props.id)
     
     
     //[4] -> who's turn it is
@@ -19,11 +19,10 @@ export const Board=(props)=>{
                                     ])
     useEffect(()=>{
         props.socket.on('play',(data)=>{
-            console.log('Chat event received!');
-            console.log(data);
+
             const values=["X","O"];
             var message="_";
-            if (data['Won']!="_" && props.id<2){
+            if (data['Won']!="_" ){
                 if (data['Won']===values[props.id]){
                     message="You have won!!"
                 }
@@ -33,15 +32,20 @@ export const Board=(props)=>{
             }
             setBoard([data['data'],data['Won']!="_",message,data['Won'],data['turn']])
         });
+        props.socket.on("restart",(data)=>{
+            console.log("restart: ",data)
+            setBoard([data['data'],false,"_","",0])
+        })
         
     },[])
-    
+    console.log(board)
+    console.log(props.id)
     function send(num,value){ 
         var item=[...board[0].slice(0,num),value,...board[0].slice(num+1)]
         props.socket.emit('play',item);
     }
     function restartGame(){
-        
+        props.socket.emit("restart")
     }
     const values={"X":"Player 1", "O":"Player 2"}
     console.log(board)
@@ -64,7 +68,6 @@ const Box=(props)=>{
         //players can only go if no one has won yet
         if (!props.go){
             //players can only play if its their turn
-            console.log("turn: ",props.turn)
             if(values[props.turn]==values[props.player]){
                 if (props.value==="_"){
                     if (props.player<=1){
@@ -72,13 +75,12 @@ const Box=(props)=>{
                     }
                     else{
                         alert("Spectators cant play!!")
-                        alert(props.player)
                     }
                 }
             }
         }
     }
-    return <div onClick={change} >{props.value}</div>
+    return <div className="box" onClick={change} >{props.value}</div>
 
 }
       

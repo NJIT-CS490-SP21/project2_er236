@@ -1,6 +1,6 @@
 Flask
-psycopg2-binary
-socket.io-client
-python-dotenv
 flask-socketio
+psycopg2-binary
+python-dotenv
 flask-cors
+Flask-SQLAlchemy==2.1
