@@ -132,20 +132,15 @@ turn=0
 def on_play(data): # data is whatever arg you pass in your emit call on client
     global turn
     print(data)
-    board=data
     didWin=checkWon(data)
     turn =(turn+1)%2
     socketio.emit('play',  {"data":data,"Won":didWin,"turn":turn}, broadcast=True, include_self=True)
-restartNum=0
+
 @socketio.on("restart")
 def restart():
-    global restartNum   ,turn
-    restart+=1
-    if restart==2:
-        socketio.emit('play',  {"data":["_","_","_","_","_","_","_","_","_"],"Won":"_","turn":0}, broadcast=True, include_self=True)
-        restartNum=0
-        turn=0
-
+    global turn
+    socketio.emit('restart',  {"data":["_","_","_","_","_","_","_","_","_"],"Won":"_","turn":0}, broadcast=True, include_self=True)
+    turn=0
 socketio.run(
     app,
     host=os.getenv('IP', '0.0.0.0'),

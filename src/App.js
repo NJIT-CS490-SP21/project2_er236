@@ -17,8 +17,6 @@ function App(props) {
             isLogged((previousState)=>[...previousState.slice(0,2),data])
         })
   },[])
-  console.log("Logged: ",Logged)
-
   function Sign(e){
     e.preventDefault()
     var name=e.target[0].value
@@ -35,7 +33,7 @@ function App(props) {
   }
   
 
-  
+  console.log("Logged: ",Logged)
   return (
     <div className="App">
       {!Logged[0]  && <Signin func={Sign} />}

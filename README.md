@@ -29,6 +29,9 @@
 2. If player two joins after player one made a move, player two will think player one hasn't made a move yet
    - Send turn updates to users as they log in, and pass it as props
    - Or make it so that player one can't move unless there a player two
+3. Users can log in with the same login
+   - Make a list of people that have login 
+   - If user is logged in, then return error if someone else tries to log in
 ## Technical Issues
 1. Whenever a spectator became a player, the player would be sent to login screen
    - Fixed the state so that the part that made the login show up wasn't resetted
