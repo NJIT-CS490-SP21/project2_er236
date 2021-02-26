@@ -11,7 +11,9 @@ function App(props) {
   const [Logged,isLogged]=useState([false,""]);
   useEffect(()=>{
     props.socket.on("turn",(data)=>{
-
+            if (data<2){
+              alert("You can play now as Player "+(data+1))
+            }
             isLogged((previousState)=>[...previousState.slice(0,2),data])
         })
   },[])
