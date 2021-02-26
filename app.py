@@ -37,7 +37,6 @@ socketio = SocketIO(
 @app.route("/LoginorRegister",methods=["GET","POST"])
 def login():
     data=json.loads(request.data.decode())
-    print("login", data["id"],"=>",clients.index(data['id']))
     if data["option"]=="register":
         try:
             db.session.add(Person(username=data["name"],score=0))
@@ -88,7 +87,6 @@ def on_disconnect():
     print('User disconnected!')
     remove=clients.index(request.sid)
     if len(clients)>2 and remove==0:
-        print("rule1")
         clients[0]=clients[2]
         del clients[2]
         socketio.emit("turn",0,room=clients[0])
@@ -99,8 +97,6 @@ def on_disconnect():
         for i in range(remove,len(clients)):
             socketio.emit("turn",i,room=clients[i])
 
-    for item in clients:
-        print(item)
 
 def checkWon(data):
     winner="_"
@@ -130,21 +126,26 @@ def checkWon(data):
     elif data[0]==data[4]==data[8] and data[0] in values:
         winner=data[0]
     return winner
-    
+board=[]
+turn=0  
 @socketio.on('play')
 def on_play(data): # data is whatever arg you pass in your emit call on client
+    global turn
     print(data)
+    board=data
     didWin=checkWon(data)
-    socketio.emit('play',  {"data":data,"Won":didWin}, broadcast=True, include_self=True)
+    turn =(turn+1)%2
+    socketio.emit('play',  {"data":data,"Won":didWin,"turn":turn}, broadcast=True, include_self=True)
 
 restartNum=0
 @socketio.on("restart")
 def restart():
-    global restartNum
+    global restartNum   ,turn
     restart+=1
     if restart==2:
-        socketio.emit('play',  {"data":["_","_","_","_","_","_","_","_","_"],"Won":"_"}, broadcast=True, include_self=True)
+        socketio.emit('play',  {"data":["_","_","_","_","_","_","_","_","_"],"Won":"_","turn":0}, broadcast=True, include_self=True)
         restartNum=0
+        turn=0
 
 socketio.run(
     app,
