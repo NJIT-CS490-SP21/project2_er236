@@ -1,6 +1,5 @@
 Flask
 flask-socketio
 psycopg2-binary
-socket.io-client
 python-dotenv
 flask-cors
