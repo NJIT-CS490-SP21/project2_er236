@@ -136,7 +136,6 @@ def on_play(data): # data is whatever arg you pass in your emit call on client
     didWin=checkWon(data)
     turn =(turn+1)%2
     socketio.emit('play',  {"data":data,"Won":didWin,"turn":turn}, broadcast=True, include_self=True)
-
 restartNum=0
 @socketio.on("restart")
 def restart():
