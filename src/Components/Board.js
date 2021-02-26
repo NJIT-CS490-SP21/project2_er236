@@ -35,7 +35,7 @@ export const Board=(props)=>{
         });
         
     },[])
-    
+    console.log(board)
     function send(num,value){ 
         var item=[...board[0].slice(0,num),value,...board[0].slice(num+1)]
         props.socket.emit('play',item);
@@ -78,7 +78,7 @@ const Box=(props)=>{
             }
         }
     }
-    return <div onClick={change} >{props.value}</div>
+    return <div className="box" onClick={change} >{props.value}</div>
 
 }
       
