@@ -45,6 +45,7 @@
 }
 .notSelf>*, .isSelf>* {
 	width:50%;
+	font-size:15px;
 }
 .isSelf{
 	background-color:#7fff00;

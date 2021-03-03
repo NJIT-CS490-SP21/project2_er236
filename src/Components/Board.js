@@ -24,6 +24,7 @@ export const Board=(props)=>{
             if (data['Won']!="_" ){
                 if (data['Won']===values[props.id]){
                     message="You have won!!"
+                    props.socket.emit("winner",{"username":props.username})
                 }
                 else{
                     message="You have lost!!!"
