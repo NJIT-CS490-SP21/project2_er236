@@ -17,15 +17,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICSTIONS']= False
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 db = db(app)
-'''
-class Person(db.Model):
-            id = db.Column(db.Integer, primary_key=True)
-            username = db.Column(db.String(80), unique=True, nullable=False)
-            score = db.Column(db.Integer, unique=False, nullable=False)
-            def __repr__(self):
-                return '<Person %r>' % self.username
-'''
-import models
+
+
 clients=[]
 
 socketio = SocketIO(
@@ -42,7 +35,7 @@ def login():
     if data["option"]=="register":
         try:
             db.insert(data["name"])
-
+            leaderboard()
             return ({
                   "code":0,
                   "message":"Successfully registerd user",
@@ -142,6 +135,11 @@ def restart():
     global turn
     socketio.emit('restart',  {"data":["_","_","_","_","_","_","_","_","_"],"Won":"_","turn":0}, broadcast=True, include_self=True)
     turn=0
+@socketio.on("leaderboard")
+def leaderboard():
+    print("here")
+    socketio.emit("leaderboard",db.query(),broadcast=True,include_self=True)
+
 socketio.run(
     app,
     host=os.getenv('IP', '0.0.0.0'),

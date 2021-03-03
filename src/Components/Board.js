@@ -1,11 +1,10 @@
 import "./board.css"
 import { useState,useEffect  } from 'react'
-
+import {Leaderboard} from './Leaderboard.js'
 
 
 export const Board=(props)=>{
     //States values
-    console.log("props.id: ",props.id)
     
     
     //[4] -> who's turn it is
@@ -38,8 +37,7 @@ export const Board=(props)=>{
         })
         
     },[])
-    console.log(board)
-    console.log(props.id)
+
     function send(num,value){ 
         var item=[...board[0].slice(0,num),value,...board[0].slice(num+1)]
         props.socket.emit('play',item);
@@ -48,7 +46,6 @@ export const Board=(props)=>{
         props.socket.emit("restart")
     }
     const values={"X":"Player 1", "O":"Player 2"}
-    console.log(board)
     return(
         <div className="game" >
             {board[1] && props.id<2 && <div className="message">{board[2]}</div>}
@@ -58,7 +55,8 @@ export const Board=(props)=>{
                 {board[0].map((items,index)=>{ return <Box  index={index}  func={send} value={board[0][index]} player={props.id} go={board[1]} turn={board[4]}/>
                 })}
             </div>
-            {board[1] && props.id<2 && <button onClick={restartGame}>Play again</button>}
+            {board[1] && props.id<2 && <button onClick={restartGame} className="restart">Play again</button>}
+            <Leaderboard leaderboard={props.leaderboard} username={props.username}/>
         </div>
     )
 }
