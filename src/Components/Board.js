@@ -11,11 +11,11 @@ export const Board=(props)=>{
     //[4] -> who's turn it is
     const [board,setBoard]=useState([["_","_","_",
                                     "_","_","_",
-                                    "_","_","_"],  //[0] ->array of box values
+                                    "_","_","_"],  //[0] ->array of box values board
                                     false,  //[1] ->bool representing if someone has won
                                     "_",    //[2] ->message for player 1 and 2 for when someone wins
                                     "",     //[3] -> value of winning player so spectators could see who won
-                                    0       //[4] ->who's turn it is
+                                    0,       //[4] ->who's turn it is
                                     ])
     useEffect(()=>{
         props.socket.on('play',(data)=>{
