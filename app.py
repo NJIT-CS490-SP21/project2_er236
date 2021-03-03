@@ -4,7 +4,7 @@ from flask_socketio import SocketIO
 from flask_cors import CORS
 from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
-
+from models import db
 
 load_dotenv()
 
@@ -16,14 +16,16 @@ app.config['SQLALCHEMY_TRACK_MODIFICSTIONS']= False
 
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
-db = SQLAlchemy(app)
+db = db(app)
+'''
 class Person(db.Model):
             id = db.Column(db.Integer, primary_key=True)
             username = db.Column(db.String(80), unique=True, nullable=False)
             score = db.Column(db.Integer, unique=False, nullable=False)
             def __repr__(self):
                 return '<Person %r>' % self.username
-db.create_all()
+'''
+import models
 clients=[]
 
 socketio = SocketIO(
@@ -39,8 +41,8 @@ def login():
     data=json.loads(request.data.decode())
     if data["option"]=="register":
         try:
-            db.session.add(Person(username=data["name"],score=0))
-            db.session.commit()
+            db.insert(data["name"])
+
             return ({
                   "code":0,
                   "message":"Successfully registerd user",
@@ -52,7 +54,7 @@ def login():
                   "message":str(error.orig) + " for parameters" + str(error.params)
               })
     elif data["option"]=="login":
-        res=db.session.query(Person.username).filter_by(username=data['name']).first() is not None
+        res=db.exist(data['name'])
         if not res:
             return(
                 {
@@ -66,7 +68,6 @@ def login():
                   "message":"Successfully logged in",
                   "id":clients.index(data['id'])
               })
-              
 @app.route('/', defaults={"filename": "index.html"})
 @app.route('/<path:filename>')
 def index(filename):
