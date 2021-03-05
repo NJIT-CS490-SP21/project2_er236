@@ -78,6 +78,7 @@ def on_connect():
 # When a client disconnects from this Socket connection, this function is run
 @socketio.on('disconnect')
 def on_disconnect():
+    global board
     print('User disconnected!')
     remove=clients.index(request.sid)
     if len(clients)>2 and remove==0:
@@ -90,6 +91,8 @@ def on_disconnect():
         del clients[remove]
         for i in range(remove,len(clients)):
             socketio.emit("id",i,room=clients[i])
+    if len(clients)==0:
+        board==["_","_","_","_","_","_","_","_","_"]
 remove=0
 @socketio.on("id")
 def getid():
