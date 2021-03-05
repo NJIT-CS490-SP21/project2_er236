@@ -23,6 +23,8 @@ export const Board=(props)=>{
                 }
                 else{
                     message="You have lost!!!"
+                    props.socket.emit("loser",{"username":props.username})
+
                 }
                 if(props.id==0){
                     Spectator_message="Player one has won"
