@@ -30,18 +30,16 @@ function App(props) {
     props.socket.on("getboard",(data)=>{
       isLogged((previousState)=>[...previousState.slice(0,4),data["data"],...previousState.slice(5)])
     })
-    props.socket.emit("getboard")
+    props.socket.emit("getboard");
+    
     props.socket.on("restart",(data)=>{
-            console.log("restart: ",data)
             isLogged((previousState)=>[...previousState.slice(0,4),data["board"],data["turn"]])
     })
     props.socket.on("getTurn",(data)=>{
-      console.log("getTurn: ",data)
       isLogged((previousState)=>[...previousState.slice(0,5),data])
 
     })
   },[])
-  console.log("Logged: ",Logged)
   function Sign(e){
     e.preventDefault()
     var name=e.target[0].value

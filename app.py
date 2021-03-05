@@ -132,19 +132,15 @@ def getturn():
 def getboard():
     global board
     socketio.emit("getboard",{"data":board},broadcast=True,include_self=True)
-last_request=""
 @socketio.on('play')
 def on_play(data): # data is whatever arg you pass in your emit call on client
     global turn,board,last_request
-    if last_request=="" or last_request!=request.sid:
-        last_request=request.sid
-        print("request: ",request.sid)
-        turn =(turn+1)%2
-        board[data["index"]]=data["value"]
-        didWin=checkWon(board)
-        getboard()
-        getturn()
-        socketio.emit('play',  {"Won":didWin,"turn":turn}, broadcast=True, include_self=True)
+    turn =(turn+1)%2
+    board[data["index"]]=data["value"]
+    didWin=checkWon(board)
+    getboard()
+    getturn()
+    socketio.emit('play',  {"Won":didWin,"turn":turn}, broadcast=True, include_self=True)
 
 @socketio.on("restart")
 def restart():

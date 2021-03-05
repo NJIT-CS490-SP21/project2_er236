@@ -8,15 +8,16 @@ export const Board=(props)=>{
                                 "", //[1] message for winner or loser
                                 "", //[2] message so spectators know who won
                                 ]);
+    console.log("won: ",won)
     useEffect(()=>{
+        props.socket.on("restart",(data)=>{
+            hasWon([false,"",""])
+        })
         props.socket.on('play',(data)=>{
             const values=["X","O"];
             var message="";
             var Spectator_message="Message"
             if (data['Won']!="_" ){
-               /* console.log("Won: ",data["Won"])
-                console.log("value: ",values[props.id])
-                console.log("props: ",props)*/
                 if (data['Won']===values[props.id]){
                     message="You have won!!"
                     props.socket.emit("winner",{"username":props.username})
@@ -43,11 +44,14 @@ export const Board=(props)=>{
     }
     function restartGame(){
         props.socket.emit("restart")
-
     }
     const values={"X":"Player 1", "O":"Player 2"}
     return(
         <div className="game" >
+            {props.id==0 && <h1 className="player">Player One</h1>}
+            {props.id==1 && <h1 className="player">Player Two</h1>}
+            {props.id>1 && <h1 className="player">Spectator</h1>}
+
             {won[0] && props.id<2 && <div className="message">{won[1]}</div>}
             {won[0] && props.id>1 && <div className="message">{won[2]} has Won!!!!</div>}
 
@@ -64,15 +68,11 @@ const Box=(props)=>{
     const values=["X","O"]
     const change=()=>{
         //players can only go if no one has won yet
-        console.log("turn: ",props.turn)
-        console.log("player: ",props.player)
         if (!props.won){
             if(props.turn===props.player){
                 if (props.value==="_"){
                     if (props.player<=1){
                         props.func(props.index,values[props.player])
-                        props.func(props.index,values[props.player])
-
                     }
                 }
            }

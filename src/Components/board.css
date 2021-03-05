@@ -1,11 +1,12 @@
 .game{
 	display:grid;
-	grid-template-areas:"message leaderboard"
+	grid-template-areas: "Player leaderboard"
+											"message leaderboard"
                       "game leaderboard"
                       "button leaderboard";
                    
 	grid-template-columns: 60% auto;
-	grid-template-rows:50px auto 50px;
+	grid-template-rows:50px 50px auto 50px;
 }
 .board {
 	width: 300px; /* Total horizontal dimensions */
