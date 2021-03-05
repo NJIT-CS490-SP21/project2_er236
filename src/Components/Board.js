@@ -10,11 +10,13 @@ export const Board=(props)=>{
                                 ]);
     useEffect(()=>{
         props.socket.on('play',(data)=>{
-
             const values=["X","O"];
             var message="";
             var Spectator_message="Message"
             if (data['Won']!="_" ){
+               /* console.log("Won: ",data["Won"])
+                console.log("value: ",values[props.id])
+                console.log("props: ",props)*/
                 if (data['Won']===values[props.id]){
                     message="You have won!!"
                     props.socket.emit("winner",{"username":props.username})
@@ -41,8 +43,7 @@ export const Board=(props)=>{
     }
     function restartGame(){
         props.socket.emit("restart")
-        hasWon([false,"",""])
-        
+
     }
     const values={"X":"Player 1", "O":"Player 2"}
     return(
@@ -63,6 +64,8 @@ const Box=(props)=>{
     const values=["X","O"]
     const change=()=>{
         //players can only go if no one has won yet
+        console.log("turn: ",props.turn)
+        console.log("player: ",props.player)
         if (!props.won){
             if(props.turn===props.player){
                 if (props.value==="_"){

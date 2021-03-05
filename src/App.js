@@ -16,7 +16,7 @@ function App(props) {
                                     0, //[5] turn
                                     ]);
   useEffect(()=>{
-    props.socket.on("turn",(data)=>{
+    props.socket.on("id",(data)=>{
             if (data<2){
               alert("You can play now as Player "+(data+1))
             }
@@ -34,6 +34,11 @@ function App(props) {
     props.socket.on("restart",(data)=>{
             console.log("restart: ",data)
             isLogged((previousState)=>[...previousState.slice(0,4),data["board"],data["turn"]])
+    })
+    props.socket.on("getTurn",(data)=>{
+      console.log("getTurn: ",data)
+      isLogged((previousState)=>[...previousState.slice(0,5),data])
+
     })
   },[])
   console.log("Logged: ",Logged)

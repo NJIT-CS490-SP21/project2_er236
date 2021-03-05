@@ -83,13 +83,13 @@ def on_disconnect():
     if len(clients)>2 and remove==0:
         clients[0]=clients[2]
         del clients[2]
-        socketio.emit("turn",0,room=clients[0])
+        socketio.emit("id",0,room=clients[0])
         for i in range(2,len(clients)):
-            socketio.emit("turn",i,room=clients[i])
+            socketio.emit("id",i,room=clients[i])
     else:
         del clients[remove]
         for i in range(remove,len(clients)):
-            socketio.emit("turn",i,room=clients[i])
+            socketio.emit("id",i,room=clients[i])
 
 
 def checkWon(data):
@@ -124,11 +124,7 @@ board=["_","_","_","_","_","_","_","_","_"]
 turn=0 
 @socketio.on("getTurn")
 def getturn():
-    if len(clients)>1:
-        socketio.emit("getTurn",turn,room=clients[0])
-        socketio.emit("getTurn",turn,room=clients[1])
-    else:
-        socketio.emit("getTurn",turn,room=clients[0])
+    socketio.emit("getTurn",turn,broadcast=True,include_self=True)
     print("Turn: ",turn)
 
     
@@ -136,15 +132,19 @@ def getturn():
 def getboard():
     global board
     socketio.emit("getboard",{"data":board},broadcast=True,include_self=True)
+last_request=""
 @socketio.on('play')
 def on_play(data): # data is whatever arg you pass in your emit call on client
-    global turn,board
-    turn =(turn+1)%2
-    board[data["index"]]=data["value"]
-    didWin=checkWon(board)
-    getboard()
-    getturn()
-    socketio.emit('play',  {"Won":didWin,"turn":turn}, broadcast=True, include_self=True)
+    global turn,board,last_request
+    if last_request=="" or last_request!=request.sid:
+        last_request=request.sid
+        print("request: ",request.sid)
+        turn =(turn+1)%2
+        board[data["index"]]=data["value"]
+        didWin=checkWon(board)
+        getboard()
+        getturn()
+        socketio.emit('play',  {"Won":didWin,"turn":turn}, broadcast=True, include_self=True)
 
 @socketio.on("restart")
 def restart():
