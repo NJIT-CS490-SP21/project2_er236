@@ -13,7 +13,7 @@ class db:
         self.Person=Person
         self.db.create_all()
     def insert(self,name):
-        entry=self.Person(username=name,score=1)
+        entry=self.Person(username=name,score=100)
         self.db.session.add(entry)
         self.db.session.commit()
         print(entry ," was added to database")

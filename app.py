@@ -154,6 +154,12 @@ def restart():
 @socketio.on("leaderboard")
 def leaderboard():
     socketio.emit("leaderboard",db.query(),broadcast=True,include_self=True)
+@socketio.on("loser")
+def loser(data):
+    user=db.Person.query.filter_by(username=data['username']).first()
+    user.score-=1
+    db.db.session.commit()
+    leaderboard()
 @socketio.on("winner")
 def winner(data):
     user=db.Person.query.filter_by(username=data['username']).first()
