@@ -10,7 +10,7 @@ import axios from 'axios';
 function App(props) {
   const [Logged,isLogged]=useState([false, //[0] is player logged or not
                                     "", //[1] player username
-                                    '', //[2] player id
+                                    undefined, //[2] player id
                                     '',  //[3] leaderboard data
                                     [], //[4] board state
                                     0, //[5] turn
@@ -22,7 +22,6 @@ function App(props) {
             }
             isLogged((previousState)=>[...previousState.slice(0,2),data,...previousState.slice(3)])
     })
-    props.socket.emit("getTurn")
 
     props.socket.on("leaderboard",(data)=>{
       isLogged((previousState)=>[...previousState.slice(0,3),data,...previousState.slice(4)])
@@ -32,7 +31,12 @@ function App(props) {
       isLogged((previousState)=>[...previousState.slice(0,4),data["data"],...previousState.slice(5)])
     })
     props.socket.emit("getboard")
+    props.socket.on("restart",(data)=>{
+            console.log("restart: ",data)
+            isLogged((previousState)=>[...previousState.slice(0,4),data["board"],data["turn"]])
+    })
   },[])
+  console.log("Logged: ",Logged)
   function Sign(e){
     e.preventDefault()
     var name=e.target[0].value

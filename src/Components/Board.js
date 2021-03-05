@@ -4,22 +4,10 @@ import {Leaderboard} from './Leaderboard.js'
 
 
 export const Board=(props)=>{
-    //States values
-    
-    
-    //[4] -> who's turn it is
-    const [board,setBoard]=useState([props.board,  //[0] ->array of box values board
-                                    false,         //[1] ->bool representing if someone has won
-                                    "_",           //[2] ->message for player 1 and 2 for when someone wins
-                                    "",            //[3] -> value of winning player so spectators could see who won
-                                    0,             //[4] ->who's turn it is
-                                                 //
-                                    ])
     const [won,hasWon]=useState([false, //[0] has someone won
                                 "", //[1] message for winner or loser
                                 "", //[2] message so spectators know who won
-                                props.turn //[3]who's turn it is
-                                ])
+                                ]);
     useEffect(()=>{
         props.socket.on('play',(data)=>{
 
@@ -41,21 +29,20 @@ export const Board=(props)=>{
                     Spectator_message="Player two has won"
  
                 }
-                hasWon((oldState)=>[true,message])
+                hasWon((oldState)=>[true,message,Spectator_message])
             }
 
         });
-        props.socket.on("restart",(data)=>{
-            hasWon([false,"",""])
-        })
         
     },[])
     function send(num,value){ 
-        var item=[...board[0].slice(0,num),value,...board[0].slice(num+1)];
+        var item=[...props.board.slice(0,num),value,...props.board.slice(num+1)];
         props.socket.emit('play',{"value":value,"index":num,"data":item});
     }
     function restartGame(){
         props.socket.emit("restart")
+        hasWon([false,"",""])
+        
     }
     const values={"X":"Player 1", "O":"Player 2"}
     return(
@@ -64,7 +51,7 @@ export const Board=(props)=>{
             {won[0] && props.id>1 && <div className="message">{won[2]} has Won!!!!</div>}
 
             <div className="board">
-                {props.board.map((items,index)=>{ return <Box  index={index}  func={send} value={props.board[index]} player={props.id} won={won[0]} turn={won[3]}/>
+                {props.board.map((items,index)=>{ return <Box  index={index}  func={send} value={props.board[index]} player={props.id} won={won[0]} turn={props.turn}/>
                 })}
             </div>
             {won[0] && props.id<2 && <button onClick={restartGame} className="restart">Play again</button>}
@@ -76,7 +63,6 @@ const Box=(props)=>{
     const values=["X","O"]
     const change=()=>{
         //players can only go if no one has won yet
-        console.log("props: ",props)
         if (!props.won){
             if(props.turn===props.player){
                 if (props.value==="_"){

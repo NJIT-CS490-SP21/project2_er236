@@ -124,7 +124,6 @@ board=["_","_","_","_","_","_","_","_","_"]
 turn=0 
 @socketio.on("getTurn")
 def getturn():
-    print("get turn")
     if len(clients)>1:
         socketio.emit("getTurn",turn,room=clients[0])
         socketio.emit("getTurn",turn,room=clients[1])
@@ -145,15 +144,14 @@ def on_play(data): # data is whatever arg you pass in your emit call on client
     didWin=checkWon(board)
     getboard()
     getturn()
-    socketio.emit('play',  {"data":board,"Won":didWin,"turn":turn}, broadcast=True, include_self=True)
+    socketio.emit('play',  {"Won":didWin,"turn":turn}, broadcast=True, include_self=True)
 
 @socketio.on("restart")
 def restart():
     global turn,board
     board=["_","_","_","_","_","_","_","_","_"]
-    getboard()
-    socketio.emit('restart',  {"Won":"_","turn":0}, broadcast=True, include_self=True)
     turn=0
+    socketio.emit('restart',  {"turn":turn,"board":board}, broadcast=True, include_self=True)
 @socketio.on("leaderboard")
 def leaderboard():
     socketio.emit("leaderboard",db.query(),broadcast=True,include_self=True)
