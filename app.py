@@ -120,33 +120,49 @@ def checkWon(data):
     elif data[0]==data[4]==data[8] and data[0] in values:
         winner=data[0]
     return winner
-board=[]
-turn=0  
+board=["_","_","_","_","_","_","_","_","_"]
+turn=0 
+@socketio.on("getTurn")
+def getturn():
+    print("get turn")
+    if len(clients)>1:
+        socketio.emit("getTurn",turn,room=clients[0])
+        socketio.emit("getTurn",turn,room=clients[1])
+    else:
+        socketio.emit("getTurn",turn,room=clients[0])
+    print("Turn: ",turn)
+
+    
+@socketio.on("getboard")
+def getboard():
+    global board
+    socketio.emit("getboard",{"data":board},broadcast=True,include_self=True)
 @socketio.on('play')
 def on_play(data): # data is whatever arg you pass in your emit call on client
-    global turn
-    print(data)
-    didWin=checkWon(data)
+    global turn,board
     turn =(turn+1)%2
-    socketio.emit('play',  {"data":data,"Won":didWin,"turn":turn}, broadcast=True, include_self=True)
+    board[data["index"]]=data["value"]
+    didWin=checkWon(board)
+    getboard()
+    getturn()
+    socketio.emit('play',  {"data":board,"Won":didWin,"turn":turn}, broadcast=True, include_self=True)
 
 @socketio.on("restart")
 def restart():
-    global turn
-    socketio.emit('restart',  {"data":["_","_","_","_","_","_","_","_","_"],"Won":"_","turn":0}, broadcast=True, include_self=True)
+    global turn,board
+    board=["_","_","_","_","_","_","_","_","_"]
+    getboard()
+    socketio.emit('restart',  {"Won":"_","turn":0}, broadcast=True, include_self=True)
     turn=0
 @socketio.on("leaderboard")
 def leaderboard():
-    print("here")
     socketio.emit("leaderboard",db.query(),broadcast=True,include_self=True)
 @socketio.on("winner")
 def winner(data):
-    print("Data: ",data)
     user=db.Person.query.filter_by(username=data['username']).first()
     user.score+=1
     db.db.session.commit()
     leaderboard()
-
 socketio.run(
     app,
     host=os.getenv('IP', '0.0.0.0'),
