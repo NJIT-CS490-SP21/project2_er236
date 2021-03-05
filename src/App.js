@@ -8,14 +8,34 @@ import axios from 'axios';
 
 
 function App(props) {
-  const [Logged,isLogged]=useState([false,""]);
+  const [Logged,isLogged]=useState([false, //[0] is player logged or not
+                                    "", //[1] player username
+                                    undefined, //[2] player id
+                                    '',  //[3] leaderboard data
+                                    [], //[4] board state
+                                    0, //[5] turn
+                                    ]);
   useEffect(()=>{
-    props.socket.on("turn",(data)=>{
-            if (data<2){
-              alert("You can play now as Player "+(data+1))
-            }
-            isLogged((previousState)=>[...previousState.slice(0,2),data])
-        })
+    props.socket.on("id",(data)=>{
+            isLogged((previousState)=>[...previousState.slice(0,2),data,...previousState.slice(3)])
+    })
+    props.socket.on("leaderboard",(data)=>{
+      isLogged((previousState)=>[...previousState.slice(0,3),data,...previousState.slice(4)])
+    })
+    props.socket.emit('leaderboard');
+    props.socket.on("getboard",(data)=>{
+      isLogged((previousState)=>[...previousState.slice(0,4),data["data"],...previousState.slice(5)])
+    })
+    props.socket.emit("getboard");
+    
+    props.socket.on("restart",(data)=>{
+            isLogged((previousState)=>[...previousState.slice(0,4),data["board"],data["turn"]])
+    })
+    props.socket.on("getTurn",(data)=>{
+      isLogged((previousState)=>[...previousState.slice(0,5),data])
+
+    })
+    props.socket.emit("getTurn")
   },[])
   function Sign(e){
     e.preventDefault()
@@ -26,18 +46,16 @@ function App(props) {
         alert(req['data']['message'])
       }
       else{
-        isLogged([true,name,req['data']['id']])
+        isLogged([true,name,req['data']['id'],...Logged.slice(3)])
       }
     })
     
   }
-  
 
-  console.log("Logged: ",Logged)
   return (
     <div className="App">
       {!Logged[0]  && <Signin func={Sign} />}
-      {Logged[0] && <Board  username={Logged[1]} socket={props.socket} id={Logged[2]} />}
+      {Logged[0] && <Board  username={Logged[1]} socket={props.socket} id={Logged[2]} leaderboard={Logged[3]} board={Logged[4]} turn={Logged[5]}/>}
     </div>
   );
 }

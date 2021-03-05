@@ -24,25 +24,13 @@
 3. Push to Heroku: `git push heroku main`
 
 ## Known problems
-1. Users only get to see board once a move is made
-   - Send board updates to users as they log in and pass it as a prop to children
-2. If player two joins after player one made a move, player two will think player one hasn't made a move yet
-   - Send turn updates to users as they log in, and pass it as props
-   - Or make it so that player one can't move unless there a player two
-3. Users can log in with the same login
+1. Spectator id doesn't change when they become a player so when they win it shows as a loser
+   - I've tried different thing to try to fix this but couldnt
+2. Users can log in with the same login
    - Make a list of people that have login 
    - If user is logged in, then return error if someone else tries to log in
 ## Technical Issues
-1. Whenever a spectator became a player, the player would be sent to login screen
-   - Fixed the state so that the part that made the login show up wasn't resetted
-2. Keeping track of users so that Spectator would become a player if a player left
-   - Have a list of users
-   - Whenever a user connected, they would be added to the list
-   - if user that disconnected is player two or Spectator
-     - remove user
-     - decrease everyone id after that user by 1
-     - if id becomes 1 user becomes player 2
-   - if player one is disconnected
-      - Spectator becomes player 1 if there's any
-      - player two is not affected at all
-      - everyone id after player two is decreased by one
+1. Storing board state
+   - I just stored board state into the backend, and send it out through socket so everyone would have the updated one
+2. Who's turn it was
+   - Stored value in database and send it out through sockets

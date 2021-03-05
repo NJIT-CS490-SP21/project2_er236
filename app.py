@@ -17,15 +17,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICSTIONS']= False
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 db = db(app)
-'''
-class Person(db.Model):
-            id = db.Column(db.Integer, primary_key=True)
-            username = db.Column(db.String(80), unique=True, nullable=False)
-            score = db.Column(db.Integer, unique=False, nullable=False)
-            def __repr__(self):
-                return '<Person %r>' % self.username
-'''
-import models
+
+
 clients=[]
 
 socketio = SocketIO(
@@ -42,7 +35,7 @@ def login():
     if data["option"]=="register":
         try:
             db.insert(data["name"])
-
+            leaderboard()
             return ({
                   "code":0,
                   "message":"Successfully registerd user",
@@ -90,15 +83,18 @@ def on_disconnect():
     if len(clients)>2 and remove==0:
         clients[0]=clients[2]
         del clients[2]
-        socketio.emit("turn",0,room=clients[0])
+        socketio.emit("id",0,room=clients[0])
         for i in range(2,len(clients)):
-            socketio.emit("turn",i,room=clients[i])
+            socketio.emit("id",i,room=clients[i])
     else:
         del clients[remove]
         for i in range(remove,len(clients)):
-            socketio.emit("turn",i,room=clients[i])
-
-
+            socketio.emit("id",i,room=clients[i])
+remove=0
+@socketio.on("id")
+def getid():
+    for i in range(len(clients)):
+        socketio.emit("id",i,room=clients[i])
 def checkWon(data):
     winner="_"
     values=["X","O"]
@@ -127,21 +123,43 @@ def checkWon(data):
     elif data[0]==data[4]==data[8] and data[0] in values:
         winner=data[0]
     return winner
-board=[]
-turn=0  
+board=["_","_","_","_","_","_","_","_","_"]
+turn=0 
+@socketio.on("getTurn")
+def getturn():
+    socketio.emit("getTurn",turn,broadcast=True,include_self=True)
+    print("Turn: ",turn)
+
+    
+@socketio.on("getboard")
+def getboard():
+    global board
+    socketio.emit("getboard",{"data":board},broadcast=True,include_self=True)
 @socketio.on('play')
 def on_play(data): # data is whatever arg you pass in your emit call on client
-    global turn
-    print(data)
-    didWin=checkWon(data)
+    global turn,board,last_request
     turn =(turn+1)%2
-    socketio.emit('play',  {"data":data,"Won":didWin,"turn":turn}, broadcast=True, include_self=True)
+    board[data["index"]]=data["value"]
+    didWin=checkWon(board)
+    getboard()
+    getturn()
+    socketio.emit('play',  {"Won":didWin,"turn":turn}, broadcast=True, include_self=True)
 
 @socketio.on("restart")
 def restart():
-    global turn
-    socketio.emit('restart',  {"data":["_","_","_","_","_","_","_","_","_"],"Won":"_","turn":0}, broadcast=True, include_self=True)
+    global turn,board
+    board=["_","_","_","_","_","_","_","_","_"]
     turn=0
+    socketio.emit('restart',  {"turn":turn,"board":board}, broadcast=True, include_self=True)
+@socketio.on("leaderboard")
+def leaderboard():
+    socketio.emit("leaderboard",db.query(),broadcast=True,include_self=True)
+@socketio.on("winner")
+def winner(data):
+    user=db.Person.query.filter_by(username=data['username']).first()
+    user.score+=1
+    db.db.session.commit()
+    leaderboard()
 socketio.run(
     app,
     host=os.getenv('IP', '0.0.0.0'),

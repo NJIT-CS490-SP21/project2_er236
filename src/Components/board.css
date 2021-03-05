@@ -1,3 +1,13 @@
+.game{
+	display:grid;
+	grid-template-areas: "Player leaderboard"
+											"message leaderboard"
+                      "game leaderboard"
+                      "button leaderboard";
+                   
+	grid-template-columns: 60% auto;
+	grid-template-rows:50px 50px auto 50px;
+}
 .board {
 	width: 300px; /* Total horizontal dimensions */
 	height: 300px; /* Total vertical dimensions */
@@ -5,12 +15,39 @@
 	grid-template-columns: repeat(3, 1fr); /* Total horizontal space broken into 3 columns */
   grid-template-rows: repeat(3, 1fr); /* Total vertical space broken into 3 rows */
   margin:auto;
+  grid-area:game
 }
-
 .box {
   border: 1px solid black; /* Shows the lines in the CSS grid */
+  font-size:50px;
+  display:flex;
+	text-align: center;
+	justify-content:center;
+
 }
 .box:hover{
 	  background-color: #00FFFF;
 
+}
+.message{
+	grid-area:message;
+	display:flex;
+	justify-content:center;
+	margin:auto;
+}
+.restart{
+	grid-area:button;
+}
+.leaderboard{
+	grid-area:leaderboard
+}
+.notSelf, .isSelf{
+	display:flex;
+}
+.notSelf>*, .isSelf>* {
+	width:50%;
+	font-size:15px;
+}
+.isSelf{
+	background-color:#7fff00;
 }
