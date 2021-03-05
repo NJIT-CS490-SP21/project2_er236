@@ -90,8 +90,11 @@ def on_disconnect():
         del clients[remove]
         for i in range(remove,len(clients)):
             socketio.emit("id",i,room=clients[i])
-
-
+remove=0
+@socketio.on("id")
+def getid():
+    for i in range(len(clients)):
+        socketio.emit("id",i,room=clients[i])
 def checkWon(data):
     winner="_"
     values=["X","O"]

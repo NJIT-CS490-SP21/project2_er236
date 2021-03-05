@@ -8,7 +8,6 @@ export const Board=(props)=>{
                                 "", //[1] message for winner or loser
                                 "", //[2] message so spectators know who won
                                 ]);
-    console.log("won: ",won)
     useEffect(()=>{
         props.socket.on("restart",(data)=>{
             hasWon([false,"",""])
@@ -16,7 +15,7 @@ export const Board=(props)=>{
         props.socket.on('play',(data)=>{
             const values=["X","O"];
             var message="";
-            var Spectator_message="Message"
+            var Spectator_message="Message";
             if (data['Won']!="_" ){
                 if (data['Won']===values[props.id]){
                     message="You have won!!"
