@@ -32,6 +32,8 @@ socketio = SocketIO(
 @app.route("/LoginorRegister",methods=["GET","POST"])
 def login():
     data=json.loads(request.data.decode())
+    return loginOrRegister(data)
+def loginOrRegister(data):
     if data["option"]=="register":
         try:
             db.insert(data["name"])
@@ -169,8 +171,10 @@ def winner(data):
     user.score+=1
     db.db.session.commit()
     leaderboard()
-socketio.run(
-    app,
-    host=os.getenv('IP', '0.0.0.0'),
-    port=8081 if os.getenv('C9_PORT') else int(os.getenv('PORT', 8081)),
-)
+
+if __name__=="__main__":
+    socketio.run(
+        app,
+        host=os.getenv('IP', '0.0.0.0'),
+        port=8081 if os.getenv('C9_PORT') else int(os.getenv('PORT', 8081)),
+    )
