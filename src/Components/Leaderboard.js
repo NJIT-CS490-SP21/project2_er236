@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export const Leaderboard = (props) => {
+export  const Leaderboard = (props) => {
   const [viewLeaderboard, setActive] = useState(false);
   function showleaderboard() {
     setActive(!viewLeaderboard);

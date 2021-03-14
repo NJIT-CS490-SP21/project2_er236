@@ -60,8 +60,6 @@ class app(unittest.TestCase):
             self.assertAlmostEqual(clients.index(test["newPlayer"]),test["newId"])
 
 
-
-
 if __name__=='__main__':
     unittest.main()
     print("here")
