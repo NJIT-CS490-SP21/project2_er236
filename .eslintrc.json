@@ -1,0 +1,19 @@
+{
+    "extends": ["airbnb","prettier"],
+    "parserOptions": {
+        "ecmaVersion": 6,
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "jsx": true
+        }
+    },
+    "rules":  {
+            "react/jsx-filename-extension" : [2, { "extensions": [".js", ".jsx"] }],
+            "react/no-array-index-key": "off",
+            "import/no-named-as-default": "off",
+            "import/no-named-as-default-member": "off",
+            "no-undef": "off",
+            "import/prefer-default-export":"off"
+
+    }
+}

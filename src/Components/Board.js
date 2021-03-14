@@ -1,5 +1,5 @@
 import './board.css';
-import { useState, useEffect,React } from 'react';
+import { useState, useEffect, React } from 'react';
 import { Leaderboard } from './Leaderboard.js';
 
 export const Board = (props) => {

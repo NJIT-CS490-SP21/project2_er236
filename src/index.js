@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
 import io from 'socket.io-client';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
+import App from './App';
+import './index.css';
 
 const socket = io();
 
@@ -11,7 +11,7 @@ ReactDOM.render(
   <React.StrictMode>
     <App socket={socket} />
   </React.StrictMode>,
-  document.getElementById('root'),
+  document.getElementById('root')
 );
 
 // If you want to start measuring performance in your app, pass a function

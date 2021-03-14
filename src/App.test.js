@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import io from 'socket.io-client';
+import { React } from 'react';
 import { Leaderboard } from './Components/Leaderboard';
 import { Board } from './Components/Board';
 import { Signin } from './Components/Signin';

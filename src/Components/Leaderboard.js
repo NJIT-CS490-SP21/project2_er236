@@ -1,4 +1,4 @@
-import { useState,React } from 'react';
+import { useState, React } from 'react';
 
 export const Leaderboard = (props) => {
   const [viewLeaderboard, setActive] = useState(false);
