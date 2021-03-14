@@ -1,8 +1,8 @@
 import './App.css';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Board } from './Components/Board.js';
-import { Signin } from './Components/Signin.js';
+import { Board } from './Components/Board';
+import { Signin } from './Components/Signin';
 
 function App(props) {
   const [Logged, isLogged] = useState([
