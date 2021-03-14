@@ -16,7 +16,7 @@ export const Board = (props) => {
       const values = ["X", "O"];
       var message = "";
       var Spectator_message = "Message";
-      if (data["Won"] != "_") {
+      if (data["Won"] !== "_") {
         if (data["Won"] === values[props.id]) {
           message = "You have won!!";
           props.socket.emit("winner", { username: props.username });
@@ -24,7 +24,7 @@ export const Board = (props) => {
           message = "You have lost!!!";
           props.socket.emit("loser", { username: props.username });
         }
-        if (props.id == 0) {
+        if (props.id === 0) {
           Spectator_message = "Player one has won";
         } else {
           Spectator_message = "Player two has won";
@@ -32,7 +32,7 @@ export const Board = (props) => {
         hasWon((oldState) => [true, message, Spectator_message]);
       }
     });
-  }, []);
+  }, );
   function send(num, value) {
     var item = [
       ...props.board.slice(0, num),
@@ -44,11 +44,10 @@ export const Board = (props) => {
   function restartGame() {
     props.socket.emit("restart");
   }
-  const values = { X: "Player 1", O: "Player 2" };
   return (
     <div className="game">
-      {props.id == 0 && <h1 className="player">Player One</h1>}
-      {props.id == 1 && <h1 className="player">Player Two</h1>}
+      {props.id === 0 && <h1 className="player">Player One</h1>}
+      {props.id === 1 && <h1 className="player">Player Two</h1>}
       {props.id > 1 && <h1 className="player">Spectator</h1>}
 
       {won[0] && props.id < 2 && <div className="message">{won[1]}</div>}

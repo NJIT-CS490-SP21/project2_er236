@@ -1,4 +1,3 @@
-import logo from "./logo.svg";
 import "./App.css";
 import { Board } from "./Components/Board.js";
 import { Signin } from "./Components/Signin.js";
@@ -50,7 +49,7 @@ function App(props) {
       isLogged((previousState) => [...previousState.slice(0, 5), data]);
     });
     props.socket.emit("getTurn");
-  }, []);
+  }, );
   function Sign(e) {
     e.preventDefault();
     var name = e.target[0].value;
