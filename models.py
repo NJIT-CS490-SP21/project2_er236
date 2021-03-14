@@ -1,29 +1,48 @@
+''' SQLAlchemy model'''
+
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import desc
 
-class db:
-    def __init__(self,app):
-        self.db=SQLAlchemy(app)
-        class Person(self.db.Model):
-            id = self.db.Column(self.db.Integer, primary_key=True)
-            username = self.db.Column(self.db.String(80), unique=True, nullable=False)
-            score = self.db.Column(self.db.Integer, unique=False, nullable=False)
+
+class Db:
+    def __init__(self, app):
+        self.Db = SQLAlchemy(app)
+
+        class Person(self.Db.Model):
+            id = self.Db.Column(self.Db.Integer, primary_key=True)
+            username = self.Db.Column(self.Db.String(80),
+                                      unique=True,
+                                      nullable=False)
+            score = self.Db.Column(self.Db.Integer,
+                                   unique=False,
+                                   nullable=False)
+
             def __repr__(self):
-                return '<Person username='+str(self.username)+'  score=' +str(self.score)+ ' >' 
-            def __eq__(self,other):
-                return self.username==other.username
-        self.Person=Person
+                return '<Person username=' + str(
+                    self.username) + '  score=' + str(self.score) + ' >'
+
+            def __eq__(self, other):
+                return self.username == other.username
+
+        self.Person = Person
         self.db.create_all()
-    def insert(self,name):
-        entry=self.Person(username=name,score=100)
+
+    def insert(self, name):
+        entry = self.Person(username=name, score=100)
         self.db.session.add(entry)
         self.db.session.commit()
-        print(entry ," was added to database")
-    def exist(self,name):
-        return self.db.session.query(self.Person.username).filter_by(username=name).first() is not None
+        print(entry, " was added to database")
+
+    def exist(self, name):
+        return self.db.session.query(
+            self.Person.username).filter_by(username=name).first() is not None
+
     def query(self):
-        que= self.Person.query.order_by(desc(self.Person.score)).all()
-        return { i:{"username":que[i].username, "score":que[i].score}  for i in range(len(que))}
-
-
-  
+        que = self.Person.query.order_by(desc(self.Person.score)).all()
+        return {
+            i: {
+                "username": que[i].username,
+                "score": que[i].score
+            }
+            for i in range(len(que))
+        }

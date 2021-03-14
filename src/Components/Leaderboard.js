@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState,React } from 'react';
 
-export  const Leaderboard = (props) => {
+export const Leaderboard = (props) => {
   const [viewLeaderboard, setActive] = useState(false);
   function showleaderboard() {
     setActive(!viewLeaderboard);
@@ -12,24 +12,24 @@ export  const Leaderboard = (props) => {
         <div className="notSelf">
           <div
             className="username"
-            style={{ fontSize: 20, fontWeight: "bold" }}
+            style={{ fontSize: 20, fontWeight: 'bold' }}
           >
             Username
           </div>
-          <div className="score" style={{ fontSize: 20, fontWeight: "bold" }}>
+          <div className="score" style={{ fontSize: 20, fontWeight: 'bold' }}>
             Score
           </div>
         </div>
       )}
-      {viewLeaderboard &&
-        Object.keys(props.leaderboard).map((item) => {
-          var isSelf = props.username === props.leaderboard[item]["username"];
+      {viewLeaderboard
+        && Object.keys(props.leaderboard).map((item) => {
+          const isSelf = props.username === props.leaderboard[item].username;
           return (
-            <div className={isSelf ? "isSelf" : "notSelf"}>
+            <div className={isSelf ? 'isSelf' : 'notSelf'}>
               <div className="username">
-                {props.leaderboard[item]["username"]}
+                {props.leaderboard[item].username}
               </div>
-              <div className="score">{props.leaderboard[item]["score"]}</div>
+              <div className="score">{props.leaderboard[item].score}</div>
             </div>
           );
         })}

@@ -1,48 +1,48 @@
-import "./board.css";
-import { useState, useEffect } from "react";
-import { Leaderboard } from "./Leaderboard.js";
+import './board.css';
+import { useState, useEffect,React } from 'react';
+import { Leaderboard } from './Leaderboard.js';
 
 export const Board = (props) => {
   const [won, hasWon] = useState([
-    false, //[0] has someone won
-    "", //[1] message for winner or loser
-    "", //[2] message so spectators know who won
+    false, // [0] has someone won
+    '', // [1] message for winner or loser
+    '', // [2] message so spectators know who won
   ]);
   useEffect(() => {
-    props.socket.on("restart", (data) => {
-      hasWon([false, "", ""]);
+    props.socket.on('restart', (data) => {
+      hasWon([false, '', '']);
     });
-    props.socket.on("play", (data) => {
-      const values = ["X", "O"];
-      var message = "";
-      var Spectator_message = "Message";
-      if (data["Won"] !== "_") {
-        if (data["Won"] === values[props.id]) {
-          message = "You have won!!";
-          props.socket.emit("winner", { username: props.username });
+    props.socket.on('play', (data) => {
+      const values = ['X', 'O'];
+      let message = '';
+      let Spectator_message = 'Message';
+      if (data.Won !== '_') {
+        if (data.Won === values[props.id]) {
+          message = 'You have won!!';
+          props.socket.emit('winner', { username: props.username });
         } else {
-          message = "You have lost!!!";
-          props.socket.emit("loser", { username: props.username });
+          message = 'You have lost!!!';
+          props.socket.emit('loser', { username: props.username });
         }
         if (props.id === 0) {
-          Spectator_message = "Player one has won";
+          Spectator_message = 'Player one has won';
         } else {
-          Spectator_message = "Player two has won";
+          Spectator_message = 'Player two has won';
         }
         hasWon((oldState) => [true, message, Spectator_message]);
       }
     });
-  }, );
+  });
   function send(num, value) {
-    var item = [
+    const item = [
       ...props.board.slice(0, num),
       value,
       ...props.board.slice(num + 1),
     ];
-    props.socket.emit("play", { value: value, index: num, data: item });
+    props.socket.emit('play', { value, index: num, data: item });
   }
   function restartGame() {
-    props.socket.emit("restart");
+    props.socket.emit('restart');
   }
   return (
     <div className="game">
@@ -52,22 +52,24 @@ export const Board = (props) => {
 
       {won[0] && props.id < 2 && <div className="message">{won[1]}</div>}
       {won[0] && props.id > 1 && (
-        <div className="message">{won[2]} has Won!!!!</div>
+        <div className="message">
+          {won[2]}
+          {' '}
+          has Won!!!!
+        </div>
       )}
 
       <div className="board">
-        {props.board.map((items, index) => {
-          return (
-            <Box
-              index={index}
-              func={send}
-              value={props.board[index]}
-              player={props.id}
-              won={won[0]}
-              turn={props.turn}
-            />
-          );
-        })}
+        {props.board.map((items, index) => (
+          <Box
+            index={index}
+            func={send}
+            value={props.board[index]}
+            player={props.id}
+            won={won[0]}
+            turn={props.turn}
+          />
+        ))}
       </div>
       {won[0] && props.id < 2 && (
         <button onClick={restartGame} className="restart">
@@ -79,12 +81,12 @@ export const Board = (props) => {
   );
 };
 const Box = (props) => {
-  const values = ["X", "O"];
+  const values = ['X', 'O'];
   const change = () => {
-    //players can only go if no one has won yet
+    // players can only go if no one has won yet
     if (!props.won) {
       if (props.turn === props.player) {
-        if (props.value === "_") {
+        if (props.value === '_') {
           if (props.player <= 1) {
             props.func(props.index, values[props.player]);
           }

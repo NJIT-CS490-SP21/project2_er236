@@ -5,3 +5,4 @@ python-dotenv
 flask-cors
 Flask-SQLAlchemy==2.1
 coverage
+pylint

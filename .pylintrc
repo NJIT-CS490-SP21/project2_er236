@@ -1,0 +1,6 @@
+[MASTER]
+disable=
+    C0116, # missing-module-docstring
+    E1101, # Instance of 'SQLAlchemy has no '' member
+    C0115, # Missing class docstring
+    C0114, # Missing module docstring
