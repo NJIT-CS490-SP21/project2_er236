@@ -9,49 +9,99 @@ sys.path.append(os.path.abspath("./"))
 
 from app import loginOrRegister,db
 
-Login_KEY_INPUT="Input"
 Login_Option="option"
 Login_Option1="register"
 Login_Option2="login"
-clients=[0]
 class LoginOrRegisterCheck(unittest.TestCase):
     def setUp(self):
-        self.success_test=[
-            {
-                Login_Option:Login_Option1,
+        self.success_test={
+            "register":[
+                #registering new user
+                {
                 "name" :"user1",
-                "id": 0
-            },
-            {
-                Login_Option:Login_Option2,
-                "name" :"user2",
-                "id": 0
-            }
-        ]
+                "id": 0,
+                "exist":False
+                
+                },
+                #registering an existing user
+                {
+                    "name" :"user1",
+                    "id": 0,
+                    "exist":True
+                    
+                }
+            ],
+            "login":[
+                #login in existing user
+
+                {
+                    "name" :"user1",
+                    "id": 0,
+                    "doesExist":True
+                },
+                #login in not existing user
+                {
+                    Login_Option:Login_Option2,
+                    "name" :"user2",
+                    "id": 0,
+                    "doesExist":False
+                } 
+            ],
+            
+            "winnerLose":[
+                {
+                    "name":"user1",
+                    "didWin":True
+                },
+                {
+                    "name":"inital_person",
+                    "didWin":False
+                }
+                
+                
+            ]
+        }
         inital_person= db.Person(username="inital_person", score=100)
         self.initial_db = [inital_person]
         
         
-    def mocked_db_add(self,name):
-        self.initial_db.append(db.Person(username=name,score=100))
-        return len(self.initial_db)
+    def mocked_db_add(self,data):
+        entry= db.Person(username=data["name"],score=100)
+        if entry not in self.initial_db:
+            self.initial_db.append(db.Person(username=data["name"],score=100))
+            return len(self.initial_db)
+        else:
+            return -1
         
-        
-    def test_success(self):
-        for test in self.success_test:
-            #test registering user
-            if test["option"]=="register":
-                with patch('app.db.insert',self.mocked_db_add):
-                    expected_result=len(self.initial_db) + 1
-
-                    actual_result=db.insert(test) 
-                    self.assertEqual(actual_result+1,expected_result)
-    '''       
-    def test_failure(self):
-        for test in self.failure_test_params:
-            actual_result=test[KEY_INPUT]
-            expected_result=test[KEY_EXPECTED]
-            self.assertNotEqual(actual_result,expected_result)
-    '''      
+    def test_register(self):
+        for test in self.success_test['register']:
+            with patch('app.db.insert',self.mocked_db_add):
+                #registering user that doesn't exist
+                if not test["exist"]:
+                    self.assertEqual(len(self.initial_db) + 1 , db.insert(test))
+                #registering user that does exist
+                else:
+                    self.assertEqual(-1,db.insert(test))
+                    
+                    
+    def mocked_db_exist(self,data):
+        return  db.Person(username=data['name']) in self.initial_db
+    def test_login(self):
+        for test in self.success_test["login"]:
+                with patch("app.db.exist", self.mocked_db_exist):
+                    #login in existing user
+                    if test["doesExist"]:
+                        expected_result=True
+                        self.assertEqual(True,db.exist(test))
+                    #login in user that doesnt exist
+                    else:
+                        self.assertEqual(False,db.exist(test))
+    def test_win(self):
+        for test in self.success_test["winnerLose"]:
+            if test["didWin"]:
+                
+                        
+            
+         
 if __name__=='__main__':
     unittest.main()
