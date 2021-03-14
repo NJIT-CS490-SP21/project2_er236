@@ -71,18 +71,24 @@ def index(filename):
 @socketio.on('connect')
 def on_connect():
     print('User connected!')
+    add_client(request.sid)
+def add_client(sid):
     if len(clients)==1 and clients[0]=="":
-        clients[0]=request.sid
-    elif request.sid not in clients:
-        clients.append(request.sid)
+        clients[0]=sid
+    elif sid not in clients:
+        clients.append(sid)
     print("player number: ",len(clients))
+    
     
 # When a client disconnects from this Socket connection, this function is run
 @socketio.on('disconnect')
 def on_disconnect():
     global board
     print('User disconnected!')
-    remove=clients.index(request.sid)
+    remove_client(request.sid)
+def remove_client(sid):
+    global board
+    remove=clients.index(sid)
     if len(clients)>2 and remove==0:
         clients[0]=clients[2]
         del clients[2]
@@ -162,16 +168,20 @@ def leaderboard():
 @socketio.on("loser")
 def loser(data):
     user=db.Person.query.filter_by(username=data['username']).first()
-    user.score-=1
-    db.db.session.commit()
+    changeScore(user,False)
     leaderboard()
 @socketio.on("winner")
 def winner(data):
     user=db.Person.query.filter_by(username=data['username']).first()
-    user.score+=1
-    db.db.session.commit()
+    changeScore(user,True)
     leaderboard()
-
+def changeScore(PersonObject,didWin):
+    if didWin:
+        PersonObject.score+=1
+    else:
+        PersonObject.score-=1
+    db.db.session.commit()
+    
 if __name__=="__main__":
     socketio.run(
         app,

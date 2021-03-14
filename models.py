@@ -9,7 +9,9 @@ class db:
             username = self.db.Column(self.db.String(80), unique=True, nullable=False)
             score = self.db.Column(self.db.Integer, unique=False, nullable=False)
             def __repr__(self):
-                return '<Person username='+self.username+'  score=' +str(self.score)+ ' >' 
+                return '<Person username='+str(self.username)+'  score=' +str(self.score)+ ' >' 
+            def __eq__(self,other):
+                return self.username==other.username
         self.Person=Person
         self.db.create_all()
     def insert(self,name):
