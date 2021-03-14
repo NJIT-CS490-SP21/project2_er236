@@ -5,7 +5,8 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
 from models import Db
-
+from engineio.payload import Payload
+Payload.max_decode_packets = 20
 load_dotenv()
 
 app = Flask(__name__, static_folder='./build/static')
@@ -23,12 +24,12 @@ clients = []
 socketio = SocketIO(app,
                     cors_allowed_origins="*",
                     json=json,
-                    manage_session=True,
-                    monitor_clients=True)
+                    )
 
 
 @app.route("/LoginorRegister", methods=["GET", "POST"])
 def login():
+    print("Login")
     data = json.loads(request.data.decode())
     return loginOrRegister(data)
 
@@ -70,8 +71,13 @@ def index(filename):
 
 @socketio.on('connect')
 def on_connect():
+    global board
     print('User connected!')
     add_client(request.sid)
+    socketio.emit("getboard", {"data": board}, room=request.sid)
+    socketio.emit("getturn", turn, room=request.sid)
+    socketio.emit("leaderboard", db.query(), room=request.sid)
+
 
 
 def add_client(sid):
@@ -112,6 +118,7 @@ remove = 0
 
 @socketio.on("id")
 def getid():
+    print("User id")
     for i in range(len(clients)):
         socketio.emit("id", i, room=clients[i])
 
@@ -152,6 +159,7 @@ turn = 0
 
 @socketio.on("getTurn")
 def getturn():
+    print("Get Turn")
     socketio.emit("getTurn", turn, broadcast=True, include_self=True)
     print("Turn: ", turn)
 
@@ -159,6 +167,7 @@ def getturn():
 @socketio.on("getboard")
 def getboard():
     global board
+    print("Get Board")
     socketio.emit("getboard", {"data": board},
                   broadcast=True,
                   include_self=True)
@@ -166,6 +175,7 @@ def getboard():
 
 @socketio.on('play')
 def on_play(data):  # data is whatever arg you pass in your emit call on client
+    print("User Play")
     global turn, board, last_request
     turn = (turn + 1) % 2
     board[data["index"]] = data["value"]
@@ -183,6 +193,7 @@ def on_play(data):  # data is whatever arg you pass in your emit call on client
 @socketio.on("restart")
 def restart():
     global turn, board
+    print("restart")
     board = ["_", "_", "_", "_", "_", "_", "_", "_", "_"]
     turn = 0
     socketio.emit('restart', {
@@ -195,11 +206,13 @@ def restart():
 
 @socketio.on("leaderboard")
 def leaderboard():
+    print("Leaderboard")
     socketio.emit("leaderboard", db.query(), broadcast=True, include_self=True)
 
 
 @socketio.on("loser")
 def loser(data):
+    print("loser")
     user = db.Person.query.filter_by(username=data['username']).first()
     changeScore(user, False)
     leaderboard()
@@ -207,6 +220,7 @@ def loser(data):
 
 @socketio.on("winner")
 def winner(data):
+    print("winner")
     user = db.Person.query.filter_by(username=data['username']).first()
     changeScore(user, True)
     leaderboard()
@@ -217,7 +231,7 @@ def changeScore(PersonObject, didWin):
         PersonObject.score += 1
     else:
         PersonObject.score -= 1
-    db.db.session.commit()
+    db.Db.session.commit()
 
 
 if __name__ == "__main__":

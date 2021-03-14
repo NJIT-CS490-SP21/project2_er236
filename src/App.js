@@ -28,7 +28,6 @@ function App(props) {
         ...previousState.slice(4),
       ]);
     });
-    props.socket.emit('leaderboard');
     props.socket.on('getboard', (data) => {
       isLogged((previousState) => [
         ...previousState.slice(0, 4),
@@ -36,7 +35,6 @@ function App(props) {
         ...previousState.slice(5),
       ]);
     });
-    props.socket.emit('getboard');
 
     props.socket.on('restart', (data) => {
       isLogged((previousState) => [
@@ -48,7 +46,6 @@ function App(props) {
     props.socket.on('getTurn', (data) => {
       isLogged((previousState) => [...previousState.slice(0, 5), data]);
     });
-    props.socket.emit('getTurn');
   });
   function Sign(e) {
     e.preventDefault();

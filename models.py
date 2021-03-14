@@ -25,16 +25,16 @@ class Db:
                 return self.username == other.username
 
         self.Person = Person
-        self.db.create_all()
+        self.Db.create_all()
 
     def insert(self, name):
         entry = self.Person(username=name, score=100)
-        self.db.session.add(entry)
-        self.db.session.commit()
+        self.Db.session.add(entry)
+        self.Db.session.commit()
         print(entry, " was added to database")
 
     def exist(self, name):
-        return self.db.session.query(
+        return self.Db.session.query(
             self.Person.username).filter_by(username=name).first() is not None
 
     def query(self):
