@@ -34,6 +34,9 @@
 2. Users can log in with the same login
    - Make a list of people that have login
    - If user is logged in, then return error if someone else tries to log in
+3. Restart button is not working, backend gets an ValueError: Too many packets in payload whenever play again is clicked
+   - Not sure where the error is coming from 
+
 
 ## Technical Issues
 
