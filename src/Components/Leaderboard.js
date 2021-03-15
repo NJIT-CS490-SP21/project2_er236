@@ -1,4 +1,5 @@
 import { useState, React } from 'react';
+import PropTypes from 'prop-types';
 
 export const Leaderboard = (props) => {
   const [viewLeaderboard, setActive] = useState(false);
@@ -7,7 +8,7 @@ export const Leaderboard = (props) => {
   }
   return (
     <div className="leaderboard">
-      <button onClick={showleaderboard}>Show Leaderboard</button>
+      <button type="button" onClick={showleaderboard}>Show Leaderboard</button>
       {viewLeaderboard && (
         <div className="notSelf">
           <div
@@ -36,3 +37,8 @@ export const Leaderboard = (props) => {
     </div>
   );
 };
+Leaderboard.propTypes={
+     leaderboard:PropTypes.arrayOf(PropTypes.any).isRequired,
+     username:PropTypes.string.isRequired,
+     score:PropTypes.number.isRequired
+}

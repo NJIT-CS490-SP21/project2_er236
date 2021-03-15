@@ -1,5 +1,6 @@
 import './board.css';
 import { useState, useEffect, React } from 'react';
+import PropTypes from 'prop-types';
 import { Leaderboard } from './Leaderboard.js';
 
 export const Board = (props) => {
@@ -72,7 +73,7 @@ export const Board = (props) => {
         ))}
       </div>
       {won[0] && props.id < 2 && (
-        <button onClick={restartGame} className="restart">
+        <button type="button" onClick={restartGame} className="restart">
           Play again
         </button>
       )}
@@ -80,7 +81,23 @@ export const Board = (props) => {
     </div>
   );
 };
+Board.propTypes={
+  username:PropTypes.string.isRequired,
+  leaderboard: PropTypes.arrayOf(PropTypes.any).isRequired,
+  id:PropTypes.number.isRequired,
+  turn:PropTypes.number.isRequired
+  
+
+}
 const Box = (props) => {
+  Box.propTypes={
+    value:PropTypes.string.isRequired,
+    player:PropTypes.number.isRequired,
+    won:PropTypes.bool.isRequired,
+    turn:PropTypes.number.isRequired,
+    func:PropTypes.func.isRequired,
+    index:PropTypes.number.isRequired
+  }
   const values = ['X', 'O'];
   const change = () => {
     // players can only go if no one has won yet
@@ -95,8 +112,9 @@ const Box = (props) => {
     }
   };
   return (
-    <div className="box" onClick={change}>
+    <div role="button" className="box" onClick={change}>
       {props.value}
     </div>
   );
 };
+
