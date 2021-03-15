@@ -4,3 +4,6 @@ disable=
     E1101, # Instance of 'SQLAlchemy has no '' member
     C0115, # Missing class docstring
     C0114, # Missing module docstring
+    C0103, # snake_case naming style
+    W1508, # os.getenv default type is builtins.int. Expected str or None. (invalid-envvar-default)
+    R1710, # Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)

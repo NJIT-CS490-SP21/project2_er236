@@ -1,12 +1,14 @@
 import os
-from flask import Flask, send_from_directory, json, session, request
+from flask import Flask, send_from_directory, json, request
 from flask_socketio import SocketIO
 from flask_cors import CORS
 from dotenv import load_dotenv
-from flask_sqlalchemy import SQLAlchemy
-from models import Db
 from engineio.payload import Payload
+from sqlalchemy import exc
+from models import Db
+
 Payload.max_decode_packets = 20
+
 load_dotenv()
 
 app = Flask(__name__, static_folder='./build/static')
@@ -21,10 +23,11 @@ db = Db(app)
 
 clients = []
 
-socketio = SocketIO(app,
-                    cors_allowed_origins="*",
-                    json=json,
-                    )
+socketio = SocketIO(
+    app,
+    cors_allowed_origins="*",
+    json=json,
+)
 
 
 @app.route("/LoginorRegister", methods=["GET", "POST"])
@@ -44,7 +47,7 @@ def loginOrRegister(data):
                 "message": "Successfully registerd user",
                 "id": clients.index(data['id'])
             })
-        except Exception as error:
+        except exc.SQLAlchemyError as error:
             return ({
                 "code":
                 1,
@@ -55,12 +58,11 @@ def loginOrRegister(data):
         res = db.exist(data['name'])
         if not res:
             return ({"code": 1, "message": "User doesn't exist"})
-        else:
-            return ({
-                "code": 0,
-                "message": "Successfully logged in",
-                "id": clients.index(data['id'])
-            })
+        return ({
+            "code": 0,
+            "message": "Successfully logged in",
+            "id": clients.index(data['id'])
+        })
 
 
 @app.route('/', defaults={"filename": "index.html"})
@@ -71,13 +73,11 @@ def index(filename):
 
 @socketio.on('connect')
 def on_connect():
-    global board
     print('User connected!')
     add_client(request.sid)
     socketio.emit("getboard", {"data": board}, room=request.sid)
     socketio.emit("getturn", turn, room=request.sid)
     socketio.emit("leaderboard", db.query(), room=request.sid)
-
 
 
 def add_client(sid):
@@ -91,7 +91,6 @@ def add_client(sid):
 # When a client disconnects from this Socket connection, this function is run
 @socketio.on('disconnect')
 def on_disconnect():
-    global board
     print('User disconnected!')
     remove_client(request.sid)
 
@@ -113,9 +112,6 @@ def remove_client(sid):
         board == ["_", "_", "_", "_", "_", "_", "_", "_", "_"]
 
 
-remove = 0
-
-
 @socketio.on("id")
 def getid():
     print("User id")
@@ -124,33 +120,33 @@ def getid():
 
 
 def checkWon(data):
-    winner = "_"
+    win = "_"
     values = ["X", "O"]
     # row1
     if data[0] == data[1] == data[2] and data[0] in values:
-        winner = data[0]
+        win = data[0]
     #row2
     elif data[3] == data[4] == data[5] and data[3] in values:
-        winner = data[3]
+        win = data[3]
     #row3
     elif data[6] == data[7] == data[8] and data[6] in values:
-        winner = data[6]
+        win = data[6]
     #column1
     elif data[0] == data[3] == data[6] and data[0] in values:
-        winner = data[0]
+        win = data[0]
     #column2
     elif data[1] == data[4] == data[7] and data[1] in values:
-        winner = data[1]
+        win = data[1]
     #column3
     elif data[2] == data[5] == data[8] and data[2] in values:
-        winner = data[2]
+        win = data[2]
     #forward diagonal /
     elif data[2] == data[4] == data[6] and data[2] in values:
-        winner = data[2]
+        win = data[2]
     #backward diagonal
     elif data[0] == data[4] == data[8] and data[0] in values:
-        winner = data[0]
-    return winner
+        win = data[0]
+    return win
 
 
 board = ["_", "_", "_", "_", "_", "_", "_", "_", "_"]
@@ -176,7 +172,7 @@ def getboard():
 @socketio.on('play')
 def on_play(data):  # data is whatever arg you pass in your emit call on client
     print("User Play")
-    global turn, board, last_request
+    global turn, board
     turn = (turn + 1) % 2
     board[data["index"]] = data["value"]
     didWin = checkWon(board)
