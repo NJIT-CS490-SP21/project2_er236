@@ -1,6 +1,7 @@
 import './App.css';
-import { useState, useEffect } from 'react';
+import { useState, useEffect,React } from 'react';
 import axios from 'axios';
+import PropTypes from 'prop-types';
 import { Board } from './Components/Board';
 import { Signin } from './Components/Signin';
 
@@ -59,7 +60,11 @@ function App(props) {
       })
       .then((req) => {
         if (req.data.code === 1) {
+          /* eslint-disable no-alert */
+
           alert(req.data.message);
+          /* eslint-enable no-alert */
+
         } else {
           isLogged([true, name, req.data.id, ...Logged.slice(3)]);
         }
@@ -82,5 +87,7 @@ function App(props) {
     </div>
   );
 }
-
+App.propTypes={
+  socket:PropTypes.any.isRequired
+}
 export default App;

@@ -1,7 +1,7 @@
 import './board.css';
 import { useState, useEffect, React } from 'react';
 import PropTypes from 'prop-types';
-import { Leaderboard } from './Leaderboard.js';
+import { Leaderboard } from './Leaderboard';
 
 export const Board = (props) => {
   const [won, hasWon] = useState([
@@ -10,13 +10,13 @@ export const Board = (props) => {
     '', // [2] message so spectators know who won
   ]);
   useEffect(() => {
-    props.socket.on('restart', (data) => {
+    props.socket.on('restart', () => {
       hasWon([false, '', '']);
     });
     props.socket.on('play', (data) => {
       const values = ['X', 'O'];
       let message = '';
-      let Spectator_message = 'Message';
+      let Spectator_Message = 'Message';
       if (data.Won !== '_') {
         if (data.Won === values[props.id]) {
           message = 'You have won!!';
@@ -26,11 +26,11 @@ export const Board = (props) => {
           props.socket.emit('loser', { username: props.username });
         }
         if (props.id === 0) {
-          Spectator_message = 'Player one has won';
+          Spectator_Message = 'Player one has won';
         } else {
-          Spectator_message = 'Player two has won';
+          Spectator_Message = 'Player two has won';
         }
-        hasWon((oldState) => [true, message, Spectator_message]);
+        hasWon( [true, message, Spectator_Message]);
       }
     });
   });
@@ -85,7 +85,11 @@ Board.propTypes={
   username:PropTypes.string.isRequired,
   leaderboard: PropTypes.arrayOf(PropTypes.any).isRequired,
   id:PropTypes.number.isRequired,
-  turn:PropTypes.number.isRequired
+  turn:PropTypes.number.isRequired,
+  board: PropTypes.arrayOf(PropTypes.any).isRequired,
+  socket:PropTypes.any.isRequired
+
+  
   
 
 }
