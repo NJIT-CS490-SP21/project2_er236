@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-export const Signin = (props) =>(
-        <form onSubmit={props.func}>
+const Signin = (props) =>(
+        <form onSubmit={(e)=>props.func(e)}>
             <h1>Hello User</h1>
             <p>Enter your username:</p>
             <input type="text" />
@@ -17,3 +17,4 @@ export const Signin = (props) =>(
 Signin.propTypes = {
         func: PropTypes.func.isRequired
 };
+export default Signin;

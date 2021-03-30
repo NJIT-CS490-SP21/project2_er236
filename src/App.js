@@ -3,7 +3,7 @@ import { useState, useEffect,React } from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import { Board } from './Components/Board';
-import { Signin } from './Components/Signin';
+import Signin  from './Components/Signin';
 
 function App(props) {
   const [Logged, isLogged] = useState([

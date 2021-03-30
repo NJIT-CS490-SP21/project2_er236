@@ -1,7 +1,7 @@
 import './board.css';
 import { useState, useEffect, React } from 'react';
 import PropTypes from 'prop-types';
-import { Leaderboard } from './Leaderboard';
+import  Leaderboard  from './Leaderboard';
 
 export const Board = (props) => {
   const [won, hasWon] = useState([

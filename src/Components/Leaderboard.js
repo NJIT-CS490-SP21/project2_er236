@@ -1,7 +1,7 @@
 import { useState, React } from 'react';
 import PropTypes from 'prop-types';
 
-export const Leaderboard = (props) => {
+const Leaderboard = (props) => {
   const [viewLeaderboard, setActive] = useState(false);
   function showleaderboard() {
     setActive(!viewLeaderboard);
@@ -23,7 +23,7 @@ export const Leaderboard = (props) => {
         </div>
       )}
       {viewLeaderboard
-        && Object.keys(props.leaderboard).map((item) => {
+        &&  [...Object.values(props.leaderboard)].map((item) => {
           const isSelf = props.username === props.leaderboard[item].username;
           return (
             <div className={isSelf ? 'isSelf' : 'notSelf'}>
@@ -42,3 +42,4 @@ Leaderboard.propTypes={
      username:PropTypes.string.isRequired,
      score:PropTypes.number.isRequired
 }
+export default Leaderboard;
